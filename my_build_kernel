@@ -1,0 +1,51 @@
+# To build/setUp new kernel
+
+sudo apt-get update
+
+#get the linux kernel tar ball from the follwing URL with wgets 
+
+echo $'\n Getting the Linux Kernel and Untaring \n' 
+wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.14.13.tar.xz
+
+# Untar-ing the kernel 
+tar -xf linux-4.14.13.tar.xz
+
+# change directory to linux kernel 
+cd linux-4.14.13
+
+# Configure the linux kernel
+echo $'\nConfiguring Linux Kernel\n' 
+cp /boot/config-$(uname -r) .config
+
+# a GUI pops up - which needs to be configured manually - its doing the same cp config command in GUI form 
+make menuconfig
+ 
+
+echo  $'\nbuilding Kernel.\n'
+
+# Build the kernel
+make -j 2
+
+
+echo $'\nInstalling kernel modules\n'
+
+# Install the kernel modules
+make -j 2 modules_install
+
+echo $'\nInstalling kernel\n'
+ 
+# Copy  kernel and .config file to /boot folder to generate system.map
+make -j 2 install
+
+echo $'\nKernel install done..few more steps\n'
+
+# to use new kernel after the next boot up
+
+update-initramfs -c -k linux-4.14.13
+
+# for the GRUB to automatically look for the available kernels in /boot folder
+
+update-grub
+update-grub2 
+
+echo $'\nKernel install done.\n'
